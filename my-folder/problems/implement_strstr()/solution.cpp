@@ -1,31 +1,35 @@
 class Solution {
 public:
-    vector<int> kmpProcess (string needle)
+    vector<int> lpsarray (string needle, int n)
     {
-        int n = needle.size();
-        vector<int> lps (n, 0);
-        for (int i = 1, len = 0; i < n;)
+        vector<int> temp (n, 0);
+        int len = 0;
+        for (int i = 1; i < n;)
         {
             if (needle[i] == needle[len])
-                lps [i++] = ++len;       
-            
+            {
+                temp[i++] = ++len;
+            }
             else if (len)
-                len = lps [len - 1];
-            
+            {
+                len = temp[len - 1];
+            }
             else
-                lps [i++] = 0;
+            {
+                temp[i++] = 0;
+            } 
         }
         
-        return lps;
+        return temp;
     }
     int strStr(string haystack, string needle) {
         int m = haystack.size();
         int n = needle.size();
-    
+        
         if (n == 0)
             return 0;
         
-        vector<int> lps = kmpProcess (needle);
+        vector<int> lps = lpsarray(needle, n);
         for (int i = 0, j = 0; i < m;)
         {
             if (haystack[i] == needle[j])
@@ -35,11 +39,14 @@ public:
             }
             
             if (j == n)
-                return (i - j);
+            {
+                return i - j;
+                j = lps[j - 1];
+            }
             
             if (i < m && haystack[i] != needle[j])
             {
-                j ? j = lps[j-1] : i++;
+                j ? j = lps[j - 1] : i++;
             }
         }
         
