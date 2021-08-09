@@ -5,7 +5,7 @@ public:
         int minNumberOfSwaps = 0;
         int forwardBracketSum = 0;
         int bestjFromRight = sLength - 1;
-        for (int i = 0; i < sLength; i++)
+        for (int i = 0; i < bestjFromRight; i++)
         {
             forwardBracketSum += (s[i] == '[') ? 1 : -1;
             if (forwardBracketSum < 0)
