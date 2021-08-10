@@ -1,47 +1,23 @@
 class Solution {
 public:
-    int lowerbound (vector<int>& ans, int X)
-    {
-        int mid, left = 0, right = ans.size();
-        
-        while (left < right)
-        {
-            mid = (left) + (right - left) / 2;
-            
-            if (ans[mid] >= X)
-            {
-                right = mid;
-            }
-            else
-            {
-                left = mid + 1;
-            }
+    int lengthOfLIS(vector<int>& nums) {
+        int res = 0;
+        vector<int> dp(nums.size()) ;
+        for(int i = 0; i < nums.size(); ++i){
+            res = max(res, 1+rec(dp, nums, i));
         }
-        
-        if (left < ans.size() && ans[left] < X)
-            left++;
-        
-        return left;
+        return res;
     }
     
-    int lengthOfLIS(vector<int>& nums) {
-        
-        vector<int> ans;
-        ans.push_back(nums[0]);
-        int j = 0;
-        
-        for (int i = 1, y = nums.size(); i < y; i++)
-        {
-            if (nums[i] > ans.back())
-            {
-                ans.push_back(nums[i]);
-            }
-            else
-            {
-                ans[lowerbound (ans, nums[i])] = nums[i];
+    int rec(vector<int>& dp, vector<int>& nums, int idx){
+        if(idx==nums.size()) return 0;
+        if (dp[idx]) return dp[idx];
+        int res = 0;
+        for(int i = idx+1; i<nums.size(); ++i){
+            if(nums[i]>nums[idx]){
+                res = max(res, 1+rec(dp, nums,i));
             }
         }
-        
-        return ans.size();
+        return dp[idx] = res;
     }
 };
