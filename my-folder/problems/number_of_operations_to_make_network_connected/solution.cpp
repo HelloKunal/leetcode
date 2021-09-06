@@ -1,36 +1,35 @@
 class Solution {
 public:
-    void dfs (int i, vector<vector<int>> &adj, vector<bool>& vis)
-    {
+    void dfs(vector<int> adj[], int i, vector<bool> &vis) {
+        if(vis[i]) return;
         vis[i] = true;
-        
-        for (int j : adj[i])
-        {
-            if (!vis[j])
-                dfs (j, adj, vis);
+        for(int j : adj[i]) {
+            dfs(adj, j, vis);
         }
     }
     int makeConnected(int n, vector<vector<int>>& connections) {
-        if (connections.size() < n - 1)
-            return -1;
-        
-        vector<vector<int>> adj(n);
-        for (auto v : connections)
-        {
-            adj[v[0]].push_back(v[1]);
-            adj[v[1]].push_back(v[0]);
+        vector<int> adj[n];
+        int E = 0;
+        for(vector<int> &connection: connections) {
+            E++;
+            adj[connection[0]].push_back(connection[1]);
+            adj[connection[1]].push_back(connection[0]);
         }
-        vector<bool> vis (n, false);
-        int count = 0;
-        for (int i = 0; i < n; i++)
-        {
-            if (!vis[i])
-            {    
-                dfs (i, adj, vis);
-                count++;
+        
+        vector<bool> vis(n, false);
+        int conCom = 0;
+        for(int i = 0; i < n; i++) {
+            if(!vis[i]) {
+                dfs(adj, i, vis);
+                conCom++;
             }
         }
-        return count - 1;
+        
+        if(E < n-1) return -1;
+        int redEdges = E - ((n-1) - (conCom-1));
+        if(redEdges >= (conCom-1)) {
+            return conCom-1;
+        }
+        return -1;
     }
-private:
 };
