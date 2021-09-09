@@ -1,24 +1,15 @@
-
-#define fl(i, a, b) for (int i = a; i < b; i++)
-
 class Solution {
 public:
-    int maxProfit(vector<int>& prices) {  
-        int buy = 0, sell = 0, days = prices.size(), res = 0;
-        while (buy < days && sell < days)
-        {
-            while (buy < days - 1 && prices[buy + 1] < prices[buy])
-                buy++;
-            
-            sell = buy;
-            
-            while (sell < days - 1 && prices[sell + 1] > prices[sell])
-                sell++;
-            
-            res += prices[sell] - prices[buy];
-            buy = sell + 1;
+    int maxProfit(vector<int>& prices) {
+        int T_ik0 = 0, T_ik1 = INT_MIN;
+        
+        int T_ik0_old;
+        for(int &price : prices) {
+            T_ik0_old = T_ik0;
+            T_ik0 = max(T_ik0, T_ik1 + price);
+            T_ik1 = max(T_ik1, T_ik0_old - price);
         }
         
-        return res;
+        return T_ik0;
     }
 };
