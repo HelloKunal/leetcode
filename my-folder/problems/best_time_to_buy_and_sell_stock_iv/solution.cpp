@@ -1,29 +1,21 @@
 class Solution {
 public:
-    vector<vector<vector<int>>> mem;
-    int rec (vector<int> &prices, int pos, int t, bool bought)
-    {
-        if (pos >= prices.size() || t == 0)
-            return 0;
-        if (mem[bought][t][pos] != -1)
-            return mem[bought][t][pos];
-        
-        int result = rec (prices, pos + 1, t, bought); // skip
-        if (bought)
-        {
-            result = max (result, rec (prices, pos + 1, t - 1, false) + prices[pos]);
+    int beauRec(vector<vector<vector<int>>> &memo, vector<int> &prices, int k, int i, bool bought) {
+        if(i >= prices.size() || k == 0) return 0;
+        if(memo[i][k][bought] != -1) {
+            return memo[i][k][bought];
         }
-        else
-        {
-            result = max (result, rec (prices, pos + 1, t, true) - prices[pos]);
+        int res = beauRec(memo, prices, k, i+1, bought);
+        if(bought) {
+            res = max(res, beauRec(memo, prices, k-1, i+1, false) + prices[i]);
+        } else {
+            res = max(res, beauRec(memo, prices, k, i+1, true) - prices[i]);
         }
         
-        mem[bought][t][pos] = result;
-        return result;
+        return memo[i][k][bought] = res;
     }
     int maxProfit(int k, vector<int>& prices) {
-        mem.resize (2, vector<vector<int>> (k+1, vector<int> (prices.size(), -1)));
-        int res = rec (prices, 0, k, false);
-        return res;
+        vector<vector<vector<int>>> memo(prices.size(), vector<vector<int>>(k+1, vector<int> (2, -1)));
+        return beauRec(memo, prices, k, 0, false);
     }
 };
