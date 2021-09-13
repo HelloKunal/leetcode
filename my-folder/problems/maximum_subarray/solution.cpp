@@ -1,33 +1,18 @@
 class Solution {
 public:
     int maxSubArray(vector<int>& nums) {
-        return maxSubArrayRec(nums, 0, nums.size() - 1);
-        
-    }
-    
-    int maxSubArrayRec(vector<int>& nums, int l, int r)
-    {
-        if(l > r)
-        {
-            return INT_MIN;
+        int curr_best = 0, best = nums[0];
+        for(int i : nums) {
+            curr_best += i;
+            
+            if(curr_best > best) {
+                best = curr_best;
+            }
+            if(curr_best < 0) {
+                curr_best = 0;
+            }
         }
         
-        int m = l + (r-l)/2;
-        int maxL = maxSubArrayRec(nums, l, m - 1);
-        int maxR = maxSubArrayRec(nums, m + 1, r);
-        
-        int sumL = 0, sumR = 0;
-        for(int i = m - 1, sum = 0; i >= l; i--)
-        {
-            sum += nums[i];
-            sumL = max(sum, sumL);            
-        }
-        for(int i = m + 1, sum = 0; i <= r; i++)
-        {
-            sum += nums[i];
-            sumR = max(sum, sumR);            
-        }
-        
-        return max(max(maxL, maxR), sumL + sumR + nums[m]);
+        return best;
     }
 };
