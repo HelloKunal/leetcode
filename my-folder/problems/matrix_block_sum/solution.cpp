@@ -1,28 +1,29 @@
 class Solution {
 public:
     vector<vector<int>> matrixBlockSum(vector<vector<int>>& mat, int k) {
-        int xAxis = mat[0].size();
         int yAxis = mat.size();
-        vector<vector<int>> matrix(yAxis+1, vector<int>(xAxis+1, 0));
-        for(int i = 1; i <= yAxis; i++) {
-            for(int j = 1; j <= xAxis; j++) {
-                matrix[i][j] += matrix[i][j-1] + matrix[i-1][j] - matrix[i-1][j-1] + mat[i-1][j-1];
+        int xAxis = mat[0].size();
+        
+        vector<vector<int>> dp(yAxis+1, vector<int> (xAxis+1, 0));
+        for(int y = 1; y <= yAxis; y++) {
+            for(int x = 1; x <= xAxis; x++) {
+                dp[y][x] = dp[y-1][x] + dp[y][x-1] - dp[y-1][x-1] + mat[y-1][x-1];
             }
         }
         
-        vector<vector<int>> answer(yAxis, vector<int>(xAxis));
-        for(int i = 0; i < yAxis; i++) {
-            for(int j = 0; j < xAxis; j++) {
-               
-                int top = i - k >= 0 ? i - k : 0;
-                int bottom = i + k < yAxis ? i + k : yAxis-1;
-                int right = j + k < xAxis ? j + k : xAxis-1;
-                int left = j - k >= 0 ? j - k : 0;
+        vector<vector<int>> res(yAxis, vector<int> (xAxis));
+        for(int y = 0; y < yAxis; y++) {
+            for(int x = 0; x < xAxis; x++) {
                 
-                answer[i][j] = matrix[bottom+1][right+1] - matrix[bottom+1][left] - matrix[top][right+1] + matrix[top][left];
+                int top = max(0, y-k);
+                int bottom = min(yAxis-1, y+k);
+                int left = max(0, x-k);
+                int right = min(xAxis-1, x+k);
+                
+                res[y][x] = dp[bottom+1][right+1] - dp[bottom+1][left] - dp[top][right+1] + dp[top][left];
             }
         }
         
-        return answer;
+        return res;
     }
 };
