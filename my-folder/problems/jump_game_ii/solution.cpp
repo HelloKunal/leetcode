@@ -1,13 +1,17 @@
 class Solution {
 public:
+    
     int jump(vector<int>& nums) {
-	int n = size(nums);
-	vector<int> dp(n, 10000);
-	dp[n - 1] = 0;  // start from last index. No jumps required to reach end if we are already here
-	// same as above. For each index, explore all jump sizes and use the one requiring minimum jumps to reach end
-	for(int i = n - 2; i >= 0; i--) 
-		for(int jumpLen = 1; jumpLen <= nums[i]; jumpLen++) 
-			dp[i] = min(dp[i], 1 + dp[min(n - 1, i + jumpLen)]);  // min(n-1, i + jumpLen) for bounds handling
-	return dp[0];
+        int max_so_far = 0, max_selected = 0, res = 0;
+        for(int i = 0; i < nums.size()-1; i++) {
+            max_so_far = max(max_so_far, i + nums[i]);
+            
+            if(i == max_selected) {
+                res++;
+                max_selected = max_so_far;
+            }
+        }
+        
+        return res;
     }
 };
