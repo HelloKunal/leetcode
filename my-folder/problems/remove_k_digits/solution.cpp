@@ -1,50 +1,41 @@
 class Solution {
 public:
     string removeKdigits(string num, int k) {
+        stack<int> st;
         
-        int sizeOfNum = num.size();
-        
-        stack <char> st;
-        
-        for (int i = 0; i < sizeOfNum; i++)
-        {
-            char charAtI = num[i];
+        for(char c : num) {
             
-            while ( st.size() > 0 && charAtI < st.top() && k > 0)
-            {
-                st.pop();
+            while(st.size() > 0 &&  c < st.top() && k > 0) {
                 k--;
+                st.pop();
             }
             
-            st.push(charAtI);
+            st.push(c);
         }
         
-        while (k > 0)
-        {
-            st.pop(); // since k < sizeOfNum always
+        while(k > 0) {
+            st.pop();
             k--;
         }
         
-        int stSize = st.size();
-        if (stSize == 0)
-            return "0";
-        char charRes[stSize];
-        for (int i = stSize - 1; i >= 0; i--)
-        {
-            charRes[i] = st.top();
+        // convert to string arr
+        int stackSize = st.size();
+        if(stackSize == 0) return "0";        
+        vector<char> fullString(stackSize);
+        for (int i = stackSize-1; i >= 0; i--) {
+            fullString[i] = st.top();
             st.pop();
         }
         
+        // remove leading zeros
         int leadingZeros = 0;
-        while (leadingZeros < stSize && charRes[leadingZeros] == '0')
-        {
+        while(leadingZeros < stackSize && fullString[leadingZeros] == '0') {
             leadingZeros++;
         }
         
         string res = "";
-        for (int i = leadingZeros, y = stSize; i < y; i++)
-        {
-            res += charRes[i];
+        for(int i = leadingZeros; i < stackSize; i++) {
+            res += fullString[i];
         }
         
         return res == "" ? "0" : res;
