@@ -1,31 +1,25 @@
 class Solution {
 public:
     string removeDuplicateLetters(string s) {
-        int sLength = s.length();
-        vector<int> letterCount (256, 0);
-        vector<bool> letterAlreadySelected (256, false);
+        vector<int> letterCount(256, 0);
+        vector<bool> letterPreset(256, false);
         
-        for (char c : s)
-        {
-            letterCount [c]++;
+        for(char c : s) {
+            letterCount[c]++;
         }
         
         string res = "0";
-        for (char c : s)
-        {
+        for(char c : s) {
             letterCount[c]--;
+            if(letterPreset[c]) continue;
             
-            if (letterAlreadySelected[c])
-                continue;
-            
-            while (res.back() > c && letterCount[res.back()])
-            {
-                letterAlreadySelected[res.back()] = false;
+            while(res.back()>c && letterCount[res.back()]) {
+                letterPreset[res.back()] = false;
                 res.pop_back();
             }
             
             res += c;
-            letterAlreadySelected[c] = true;
+            letterPreset[c] = true;
         }
         
         return res.substr(1);
