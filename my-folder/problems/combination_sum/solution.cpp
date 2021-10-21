@@ -1,34 +1,25 @@
 class Solution {
 public:
-    void Rec (int index, int target, vector<int> &candidates, list<list<int>> &ans, list<int> &temp_ans)
-    {   
-        if (index >= candidates.size())
-        {
-            if (target == 0)
-            {
-                ans.push_back(temp_ans);
-            }     
+    
+    void combinationSumUtil(int curr, int n, vector<int>& temp, vector<int>& candidates, int sum, int target, vector<vector<int>>& res) {
+        if(curr == n) {
+            if(sum == target) res.push_back(temp);
             return;
         }
         
-        if (candidates[index] <= target)
-        {
-            temp_ans.push_back(candidates[index]);
-            Rec (index, target-candidates[index], candidates, ans, temp_ans);
-            temp_ans.pop_back();
+        if(candidates[curr] <= target - sum) {
+            temp.push_back(candidates[curr]);
+            combinationSumUtil(curr, n, temp, candidates, sum+candidates[curr], target, res);
+            temp.pop_back();
         }
-        Rec (index+1, target, candidates, ans, temp_ans);
-    }
-    vector<vector<int>> combinationSum(vector<int>& candidates, int target) {
-        list<list<int>> ans;
-        list<int> temp_ans;
         
-        Rec (0, target, candidates, ans, temp_ans);
-        vector<vector<int>> result;
-        for (auto i : ans)
-        {
-            result.push_back(vector<int> (i.begin(), i.end()));
-        }
-        return result;        
+        combinationSumUtil(curr+1, n, temp, candidates, sum, target, res);
+    }
+    
+    vector<vector<int>> combinationSum(vector<int>& candidates, int target) {
+        vector<vector<int>> res;
+        vector<int> temp;
+        combinationSumUtil(0, candidates.size(), temp, candidates, 0, target, res);
+        return res;        
     }
 };
