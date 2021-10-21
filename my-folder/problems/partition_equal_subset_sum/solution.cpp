@@ -1,28 +1,25 @@
 class Solution {
 public:
+    vector<vector<int>> memo;
+    bool subsetSumUtil(int curr, int n, int sum, int target, vector<int>& nums) {
+        if(curr == n) {
+            if(sum == target) return true;
+            else return false;
+        }
+        if(memo[curr][sum] != -1) return memo[curr][sum];
+        
+        return memo[curr][sum] = subsetSumUtil(curr+1, n, sum+nums[curr], target, nums) || 
+        subsetSumUtil(curr+1, n, sum, target, nums);
+    }
+    
     bool canPartition(vector<int>& nums) {
         int sum = 0;
-        for(int i : nums) {
-            sum += i;
-        }
+        for(int i : nums) sum += i;
         if(sum % 2 == 1) return false;
-        int k = sum / 2;
-        vector<vector<bool>> dp(nums.size()+1, vector<bool>(k+1, false));
-        for(int i = 0; i <= nums.size(); i++) {
-            for(int j = 0; j <= k; j++) {
-                if(i == 0 && j == 0) dp[i][j] = true;
-                else if(i == 0) dp[i][j] = false;
-                else if(j == 0) dp[i][j] = true;
-                else {
-                    if(dp[i-1][j] == true) dp[i][j] = true;
-                    else {
-                        if(j >= nums[i-1]) {
-                            if(dp[i-1][j-nums[i-1]] == true) dp[i][j] = true;
-                        }
-                    }
-                }
-            }
+        else {
+            int newsum = sum/2;
+            memo.assign(nums.size(), vector<int> (sum+1, -1));
+            return subsetSumUtil(0, nums.size(), 0, newsum, nums);
         }
-        return dp[nums.size()][k];
     }
 };
