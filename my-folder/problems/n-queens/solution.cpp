@@ -1,63 +1,41 @@
 class Solution {
 public:
-    bool isSafe (int row, int col, vector<string> board, int n)
-    {
-        int duprow = row;
-        int dupcol = col;
-        while (row >= 0 && col >= 0)
-        {
-            if (board[row][col] == 'Q')
-                return false;
-            row--;
-            col--;
-        }
-        
-        row = duprow;
-        col = dupcol;
-        while (col >= 0)
-        {
-            if (board[row][col] == 'Q')
-                return false;
-            col--;
-        }
-        
-        row = duprow;
-        col = dupcol;
-        while (row < n && col>= 0)
-        {
-            if (board[row][col] == 'Q')
-                return false;
-            col--;
-            row++;
-        }
-        
-        return true;
-    }
-    
-    void solve (int col, vector<string> &board, vector<vector<string>> &ans, int n)
-    {
-        if (col == n)
-        {
-            ans.push_back (board);
+    void NQRec(int curr, int n, vector<bool>& col, vector<bool>& Ldiag, vector<bool>& Rdiag, vector<string>& oneAns, vector<vector<string>>& ret) {
+        if(curr == n) {
+            ret.push_back(oneAns);
             return;
         }
-        for (int row = 0; row < n; row++)
-        {
-            if (isSafe(row, col,board,n))
-            {
-                board[row][col]='Q';
-                solve (col + 1, board, ans, n);
-                board[row][col]='.';
+
+        string thisRow = "";
+        for(int i = 0; i < n; i++) {
+            if(!col[i] && !Ldiag[i+curr] && !Rdiag[curr-i+n-1]) {
+                string tempRow = thisRow + "Q";
+                for(int j = tempRow.size(); j < n; j++) tempRow += ".";
+                oneAns.push_back(tempRow);
+
+                col[i] = true;
+                Ldiag[i+curr] = true;
+                Rdiag[curr-i+n-1] = true;
+                NQRec(curr+1, n, col, Ldiag, Rdiag, oneAns, ret);
+                col[i] = false;
+                Ldiag[i+curr] = false;
+                Rdiag[curr-i+n-1] = false;
+
+                oneAns.pop_back();
             }
+            thisRow += ".";
         }
     }
+        
     vector<vector<string>> solveNQueens(int n) {
-        vector<vector<string>> ans;
-        vector<string> board(n);
-        string s(n, '.');
-        for (int i = 0; i < n; i++)
-            board[i]=s;
-        solve (0, board, ans, n);
-        return ans;
+        if(n == 1) return {{"Q"}};
+        vector<bool> col(n, false);
+        vector<bool> Ldiag(2*(n-1), false);
+        vector<bool> Rdiag(2*(n-1), false);
+
+        vector<vector<string>> ret;
+        vector<string> oneAns;
+        NQRec(0, n, col, Ldiag, Rdiag, oneAns, ret);
+        return ret;
     }
 };
