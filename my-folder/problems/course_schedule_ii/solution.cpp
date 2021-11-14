@@ -1,34 +1,32 @@
 class Solution {
 public:
     vector<int> findOrder(int numCourses, vector<vector<int>>& prerequisites) {
-        vector<vector<int>> graph(numCourses, vector<int>());
-        queue<int> nodes;
-        vector<int> indegrees(numCourses, 0);
-        int visit_node_size = 0;
-        vector<int> result;
+        vector<int> inorderCol(numCourses, 0);
+        vector<int> adj[numCourses];
+        for(auto p : prerequisites) {
+            inorderCol[p[0]]++;
+            adj[p[1]].push_back(p[0]);
+        }
         
-        for (auto item : prerequisites) {
-            graph[item[1]].push_back(item[0]);
-            ++ indegrees[item[0]];
+        queue<int> freeNodes;
+        for(int i = 0; i < numCourses; i++) {
+            if(inorderCol[i] == 0) freeNodes.push(i);
         }
-        for (int node_id = 0; node_id < indegrees.size(); ++ node_id) {
-            if (indegrees[node_id] == 0) {
-                nodes.push(node_id);
-            }
-        }
-        while (!nodes.empty()) {
-            ++ visit_node_size;
-            int node_id = nodes.front();
-            nodes.pop();
-            result.push_back(node_id);
-            for (auto neighber_id : graph[node_id]) {
-                -- indegrees[neighber_id];
-                if (indegrees[neighber_id] == 0) {
-                    nodes.push(neighber_id);
+        
+        vector<int> res;
+        while(freeNodes.size() > 0) {
+            int freeNode = freeNodes.front();
+            freeNodes.pop();
+            res.push_back(freeNode);
+            
+            for(int v : adj[freeNode]) {
+                if(--inorderCol[v] == 0) {
+                    freeNodes.push(v);
                 }
             }
         }
         
-        return visit_node_size == numCourses ? result : vector<int>();
+        if(res.size() != numCourses) return {};
+        else return res;
     }
 };
