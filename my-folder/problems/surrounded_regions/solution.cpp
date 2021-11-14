@@ -1,44 +1,31 @@
 class Solution {
 public:
-    void dfs(int i, int j, int xAxis, int yAxis, vector<vector<char>> &board) {
-        if(i >= xAxis || i < 0 || j >= yAxis || j < 0) {
-            return;
-        }
-        if(board[i][j] == 'O') {
-            board[i][j] = '1';
-            dfs(i+1, j, xAxis, yAxis, board);
-            dfs(i, j+1, xAxis, yAxis, board);
-            dfs(i-1, j, xAxis, yAxis, board);
-            dfs(i, j-1, xAxis, yAxis, board);
-        }
+    int dxy[5] = {0, 1, 0, -1, 0};
+    
+    void dfs(vector<vector<char>>& board, int x, int y) {
+        board[y][x] = '1';
+        for(int i = 0; i < 4; i++) {
+            int dx = x + dxy[i];
+            int dy = y + dxy[i+1];
+            if(dx < 0 || dx >= board[0].size() || dy < 0 || dy >= board.size()) continue;
+            if(board[dy][dx] == 'O') dfs(board, dx, dy);            
+        }        
     }
     
     void solve(vector<vector<char>>& board) {
-        int xAxis = board[0].size();
-        if(xAxis <= 1) {
-            return;
+        for(int i = 0; i < board.size(); i++) {
+            if(board[i][0] == 'O') dfs(board, 0, i);
+            if(board[i][board[0].size()-1] == 'O') dfs(board, board[0].size()-1, i);
         }
-        int yAxis = board.size();
-        if(yAxis <= 1) {
-            return;
-        }
-        
-        for(int i = 0; i < yAxis; i++) {
-            dfs(i, 0, yAxis, xAxis, board);
-            dfs(i, xAxis-1, yAxis, xAxis, board);
-        }
-        for(int j = 0; j < xAxis; j++) {
-            dfs(0, j, yAxis, xAxis, board);
-            dfs(yAxis-1, j, yAxis, xAxis, board);
+        for(int i = 0; i < board[0].size(); i++) {
+            if(board[0][i] == 'O') dfs(board, i, 0);
+            if(board[board.size()-1][i] == 'O') dfs(board, i, board.size()-1);
         }
         
-        for(int i = 0; i < yAxis; i++) {
-            for(int j = 0; j < xAxis; j++) {
-                if(board[i][j] == 'O') {
-                    board[i][j] = 'X';
-                } else if(board[i][j] == '1') {
-                    board[i][j] = 'O';
-                }
+        for(int i = 0; i < board.size(); i++) {
+            for(int j = 0; j < board[0].size(); j++) {
+                if(board[i][j] == '1') board[i][j] = 'O';
+                else if(board[i][j] == 'O') board[i][j] = 'X';
             }
         }
     }
