@@ -1,32 +1,30 @@
 class Solution {
 public:
     int maxCoins(vector<int>& nums) {
-        int numsSize = nums.size();
-        vector<vector<int>> dpArray(numsSize, vector<int> (numsSize, 0));
+        int n = nums.size();
+        vector<vector<int>> gapDP(n, vector<int> (n, 0));
         
-        for(int g = 0; g < numsSize; g++) {
-            for(int i = 0, j = g; j < numsSize; i++, j++) {
+        // gap strategy
+        for(int g = 0; g < n; g++) {
+            for(int i = 0, j = g; j < n; i++, j++) {
                 
-                int max_temp = INT_MIN;
+                int miTemp = INT_MIN;
                 for(int k = i; k <= j; k++) {
-                    int left = k == i ? 0 : dpArray[i][k-1];
-                    int right = k == j ? 0 : dpArray[k+1][j];
-                    int val = nums[k];
-                    if(i > 0) {
-                        val *= nums[i-1];
-                    }
-                    if(j < numsSize-1) {
-                        val *= nums[j+1];
-                    }
+                    int left = k == i ? 0 : gapDP[i][k-1];
+                    int right = k == j ? 0 : gapDP[k+1][j];
+                    
+                    int val = nums[k];                    
+                    if(i > 0) val *= nums[i-1];          
+                    if(j < n-1) val *= nums[j+1];
                     
                     int total = left + right + val;
-                    max_temp = max(total, max_temp);
+                    miTemp = max(miTemp, total);                    
                 }
                 
-                dpArray[i][j] = max_temp;
+                gapDP[i][j] = miTemp;
             }
         }
         
-        return dpArray[0][numsSize-1];
+        return gapDP[0][n-1];
     }
 };
