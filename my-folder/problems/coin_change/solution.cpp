@@ -1,28 +1,27 @@
 class Solution {
 public:
     int coinChange(vector<int>& coins, int amount) {
-        int numCoins = coins.size();
-        vector<vector<long long int>> dpArray(numCoins+1, vector<long long int> (amount+1));
+        int n = coins.size();
+        vector<vector<int>> dpArr(amount+1, vector<int> (n+1, 0));
         
-        for(int i = 0; i <= amount; i++) dpArray[0][i] = INT_MAX-1;
-        for(int y = 0; y <= numCoins; y++) dpArray[y][0] = 0;
-        for(int x = 1; x <= amount; x++) {
-            if(x % coins[0] == 0) dpArray[1][x] = x / coins[0];
-            else dpArray[1][x] = INT_MAX-1;
+        for(int i = 0; i <= amount; i++) dpArr[i][0] = INT_MAX-1;
+        for(int i = 0; i <= n; i++) dpArr[0][i] = 0;
+        for(int i = 1; i <= amount; i++) {
+            if(i % coins[0] == 0) dpArr[i][1] = i / coins[0];
+            else dpArr[i][1] = INT_MAX-1;
         }
         
-        for(int y = 2; y <= numCoins; y++) {
-            for(int x = 1; x <= amount; x++) {
-                
-                if(x >= coins[y-1]) {
-                    dpArray[y][x] = min(1 + dpArray[y][x-coins[y-1]], dpArray[y-1][x]);
-                } else {
-                    dpArray[y][x] = dpArray[y-1][x];
+        for(int i = 1; i <= amount; i++) {
+            for(int j = 2; j <= n; j++) {
+                if(coins[j-1] > i) dpArr[i][j] = dpArr[i][j-1];
+                else {
+                    int diff = i - coins[j-1];
+                    dpArr[i][j] = min(dpArr[i][j-1], 1 + dpArr[diff][j]);
                 }
             }
         }
         
-        if(dpArray[numCoins][amount] > amount) return -1;
-        else return dpArray[numCoins][amount];
+        if(dpArr[amount][n] > amount) return -1;
+        return dpArr[amount][n];
     }
 };
