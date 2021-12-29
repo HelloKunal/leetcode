@@ -1,18 +1,28 @@
 class Solution {
 public:
-    vector<vector<vector<int>>> memo;
-    int RecPaths(int m, int n, int maxMove, int startRow, int startColumn) {
-        if(startRow > m-1 || startRow < 0 || startColumn > n-1 || startColumn < 0) return 1;
+    int dxy[5] = {0, 1, 0, -1, 0};
+    int mod = pow(10, 9) + 7;
+    map<tuple<int, int, int>, int> cache;
+    int DFS(int m, int n, int maxMove, int i, int j) {
+        if(i >= m || i < 0 || j < 0 || j >= n) return 1;
         if(maxMove == 0) return 0;
-        if(memo[startRow][startColumn][maxMove] != -1) return memo[startRow][startColumn][maxMove];
-        int top = RecPaths(m, n, maxMove-1, startRow+1, startColumn)%(1000000007);
-        int right = RecPaths(m, n, maxMove-1, startRow, startColumn+1)%(1000000007);
-        int bottom = RecPaths(m, n, maxMove-1, startRow-1, startColumn)%(1000000007);
-        int left = RecPaths(m, n, maxMove-1, startRow, startColumn-1)%(1000000007);
-        return memo[startRow][startColumn][maxMove] = ((top+right)%1000000007+(bottom+left)%1000000007)%1000000007;
+        
+        auto find = cache.find({maxMove, i, j});
+        if(find != cache.end()) return find->second;
+        
+        int res = 0;
+        for(int k = 0; k < 4; k++) {
+            int nx = i + dxy[k];
+            int ny = j + dxy[k+1];
+            res = (res + (DFS(m, n, maxMove-1, nx, ny) % mod)) % mod;
+        }
+        
+        return cache[{maxMove, i, j}] = res;
     }
+    
     int findPaths(int m, int n, int maxMove, int startRow, int startColumn) {
-        memo.assign(m, vector<vector<int>> (n, vector<int> (maxMove+1, -1)));
-        return RecPaths(m, n, maxMove, startRow, startColumn);
+        if(maxMove == 0) return 0;
+        
+        return DFS(m, n, maxMove, startRow, startColumn);
     }
 };
