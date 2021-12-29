@@ -1,7 +1,7 @@
 class Solution {
 public:
     bool ans = false;
-    bool partitionUtil(vector<int> &nums, vector<int> subsetSum, vector<bool> taken, int subset, int n, int k, int curr, int limit) {
+    bool partitionUtil(vector<int>& nums, vector<int> subsetSum, vector<bool> taken, int subset, int n, int k, int curr, int limit) {
         if(subsetSum[curr] == subset) {
             if(curr == k-2) return true;
             return partitionUtil(nums, subsetSum, taken, subset, n, k, curr+1, n-1);
