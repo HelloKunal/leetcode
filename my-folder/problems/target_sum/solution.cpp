@@ -1,19 +1,23 @@
 class Solution {
 public:
-    int findTargetSumWays(vector<int>& nums, int target) {
-        unordered_map<int, int> dpArray;
-        dpArray[0] = 1;
-        for(int num : nums) {
-            unordered_map<int, int> dpArray2;
-            for(auto temp : dpArray) {
-                int tempkey = temp.first;
-                int key1 = tempkey-num, key2 = tempkey+num;
-                dpArray2[key1] += dpArray[tempkey];
-                dpArray2[key2] += dpArray[tempkey];
-            }
-            dpArray = dpArray2;
-        }
+    int n, S;
+    map<pair<int, int>, int> cache;
+    int DFS(vector<int>& nums, int currSum, int i) {
+        auto find = cache.find({i, currSum});
         
-        return dpArray[target];
+        if(find != cache.end()) return find->second;
+        
+        if(i == n && currSum == S) return 1;
+        if(i >= n) return 0;
+        
+        return cache[{i, currSum}] = DFS(nums, currSum + nums[i], i+1) + DFS(nums, currSum - nums[i], i+1);
+    }
+    int findTargetSumWays(vector<int>& nums, int target) {
+        n = nums.size();
+        S = target;
+        
+        if(n == 0) return 0;
+        
+        return DFS(nums, 0, 0);
     }
 };
