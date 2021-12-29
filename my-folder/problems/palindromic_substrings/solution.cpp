@@ -1,27 +1,20 @@
 class Solution {
 public:
     int countSubstrings(string s) {
-        int size_s = s.length();
-        vector<vector<bool>> dpArr(size_s, vector<bool>(size_s, false));
-        
+        int n = s.length();
         int res = 0;
-        for(int g = 0; g < size_s; g++) {
-            for(int i = 0, j = g; j < size_s; i++, j++) {
+        vector<vector<int>> gapDP(n, vector<int> (n));
+        for(int g = 0; g < n; g++) {
+            for(int i = 0, j = g; j < n; i++, j++) {
                 if(g == 0) {
-                    dpArr[i][j] = true;
+                    gapDP[i][j] = true;
                     res++;
                 } else if(g == 1) {
-                    if(s[i] == s[j]) {
-                        dpArr[i][j] = true;
-                        res++;
-                    }
+                    if(s[i] == s[j]) {gapDP[i][j] = true; res++;}
+                    else gapDP[i][j] = false;
                 } else {
-                    if(s[i] == s[j]) {
-                        if(dpArr[i+1][j-1] == true) {
-                            res++;
-                            dpArr[i][j] = true;
-                        }
-                    }
+                    if(s[i] == s[j] && gapDP[i+1][j-1]) {gapDP[i][j] = true; res++;}
+                    else gapDP[i][j] = false;
                 }
             }
         }
