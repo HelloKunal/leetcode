@@ -1,30 +1,19 @@
 class Solution {
 public:
     int minFallingPathSum(vector<vector<int>>& matrix) {
-        int n = matrix.size();
-        vector<int> dp1(matrix.back());
-        vector<int> dp2(matrix.back());
+        int lvls = matrix.size();
+        int n = matrix[0].size();
         
-        for(int layer = n-2; layer >= 0; layer--) {
-            for(int i = 0; i < n; i++) {
-                if(i == 0) {
-                    dp2[i] = min(dp1[i], dp1[i+1]) + matrix[layer][i];
-                    
-                } else if(i == n-1) {
-                    dp2[i] = min(dp1[i], dp1[i-1]) + matrix[layer][i];
-                    
-                } else {
-                    dp2[i] = min(dp1[i], min(dp1[i-1], dp1[i+1])) + matrix[layer][i];
-                }
+        for(int i = lvls-2; i >= 0; i--) {
+            for(int j = 0; j < n; j++) {
+                if(j == 0) matrix[i][j] += min(matrix[i+1][j], matrix[i+1][j+1]);
+                else if(j == n-1) matrix[i][j] += min(matrix[i+1][j-1], matrix[i+1][j]);
+                else matrix[i][j] += min(matrix[i+1][j], min(matrix[i+1][j-1], matrix[i+1][j+1]));
             }
-            swap(dp1, dp2);
         }
         
-        int mini = INT_MAX;
-        for(int i : dp1) {
-            mini = min(mini, i);
-        }
-        
-        return mini;
+        int maxE = INT_MAX;
+        for(int i = 0; i < n; i++) maxE = min(maxE, matrix[0][i]);
+        return maxE;
     }
 };
