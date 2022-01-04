@@ -1,27 +1,34 @@
 class Solution {
 public:
     vector<vector<int>> matrixBlockSum(vector<vector<int>>& mat, int k) {
-        int yAxis = mat.size();
-        int xAxis = mat[0].size();
+        int m = mat.size();
+        int n = mat[0].size();
         
-        vector<vector<int>> dp(yAxis+1, vector<int> (xAxis+1, 0));
-        for(int y = 1; y <= yAxis; y++) {
-            for(int x = 1; x <= xAxis; x++) {
-                dp[y][x] = dp[y-1][x] + dp[y][x-1] - dp[y-1][x-1] + mat[y-1][x-1];
+        vector<vector<int>> preSum(m, vector<int> (n));
+        for(int i = 0; i < m; i++) {
+            int sumHere = 0;
+            for(int j = 0; j < n; j++) {
+                sumHere += mat[i][j];
+                preSum[i][j] = sumHere;
             }
         }
         
-        vector<vector<int>> res(yAxis, vector<int> (xAxis));
-        for(int y = 0; y < yAxis; y++) {
-            for(int x = 0; x < xAxis; x++) {
-                
-                int top = max(0, y-k);
-                int bottom = min(yAxis-1, y+k);
-                int left = max(0, x-k);
-                int right = min(xAxis-1, x+k);
-                
-                res[y][x] = dp[bottom+1][right+1] - dp[bottom+1][left] - dp[top][right+1] + dp[top][left];
+        vector<vector<int>> res;
+        for(int i = 0; i < m; i++) {
+            vector<int> temp;
+            for(int j = 0; j < n; j++) {
+                int sumHere = 0;
+                for(int r = i - k; r <= i+k; r++) {
+                    if(r < 0) continue;
+                    if(r >= m) break;
+                    int right = min(n-1, j+k);
+                    int left = max(-1, j-k-1);
+                    sumHere += preSum[r][right];
+                    if(left >= 0) sumHere -= preSum[r][left];
+                }
+                temp.push_back(sumHere);
             }
+            res.push_back(temp);
         }
         
         return res;
