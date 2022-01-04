@@ -1,19 +1,28 @@
 class Solution {
 public:
-    int numRollsToTarget(int d, int f, int target) {
-        vector<vector<int>> dp (d+1, vector<int>(target+1, 0));
-        dp[0][0] = 1;
-        int mod = pow(10, 9) + 7;
-        for(int y = 1; y <= d; y++) {
-            for(int x = 1; x <= target; x++) {
-                for(int k = 1; k <= f; k++) {
-                    if(k <= x) {
-                        dp[y][x] = (dp[y][x]%mod + dp[y-1][x-k]%mod)%mod;
-                    }
-                }
-            }
+    vector<vector<int>> memo;
+    int mod = pow(10, 9) + 7;
+    int solve(int n, int k, int target) {
+        if(memo[n][target] != -1) return memo[n][target];
+        if(n == 1) {
+            if(target == 0) return 0;
+            if(target > k) return 0;
+            return 1;
         }
         
-        return dp[d][target];
+        int total = 0;
+        for(int i = 1; i <= k; i++) {
+            int left = solve(1, k, i);
+            int right = (target - i >= 0) ? solve(n-1, k, target - i) : 0;
+            total += (left * right) % mod;
+            total %= mod;
+        }
+        
+        return memo[n][target] = total;
+    }
+    
+    int numRollsToTarget(int n, int k, int target) {
+        memo.assign(n+1, vector<int> (max(target, k) + 1, -1));
+        return solve(n, k, target);
     }
 };
