@@ -12,15 +12,15 @@
 class Solution {
 public:
     long long int res = 0, totalSum = 0, sumThatweReturn;
-    int sumOfUnderRootIncludding(TreeNode* root) {
+    int sumUnderRootIncluding(TreeNode* root) {
         if(root == NULL) return 0;
-        sumThatweReturn = root->val + sumOfUnderRootIncludding(root->left) + sumOfUnderRootIncludding(root->right);
+        sumThatweReturn = root->val + sumUnderRootIncluding(root->left) + sumUnderRootIncluding(root->right);
         res = max(res, sumThatweReturn * (totalSum - sumThatweReturn));
         return sumThatweReturn;
     }
     int maxProduct(TreeNode* root) {
-        totalSum = sumOfUnderRootIncludding(root);
-        sumOfUnderRootIncludding(root); // Because we get res now
+        totalSum = sumUnderRootIncluding(root);
+        sumUnderRootIncluding(root);
         return res % 1000000007;
     }
 };
