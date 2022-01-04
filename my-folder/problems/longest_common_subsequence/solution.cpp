@@ -13,7 +13,7 @@ public:
                 
                 if(text1[i-1] == text2[j-1]) {
                     dp[i][j] = 1 + dp[i-1][j-1];
-                } else {
+                }  else {
                     dp[i][j] = max(dp[i-1][j], dp[i][j-1]);
                 }
             }
