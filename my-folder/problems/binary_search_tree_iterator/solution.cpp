@@ -11,31 +11,30 @@
  */
 class BSTIterator {
 public:
-    list<int> q;
-    void inorder (TreeNode* root)
-    {
-        if (!root)
-            return;
-        inorder(root->left);
-        q.push_back(root->val);
-        inorder(root->right);
-    }
+    stack<TreeNode*> st;
+    
     BSTIterator(TreeNode* root) {
-        q = {};
-        q.push_back(INT_MIN);
-        inorder(root);
+        add_left(root);    
+    }
+    
+    void add_left(TreeNode* root) {
+        while(root != NULL) {
+            st.push(root);
+            root = root->left;
+        }
     }
     
     int next() {
-        q.pop_front();
-        return q.front();
+        auto temp = st.top(); st.pop();
+        
+        if(temp->right != NULL) add_left(temp->right);
+        
+        return temp->val;
     }
     
     bool hasNext() {
-        if (q.size() == 1)
-            return false;
-        return true;
-        
+        if(st.size() == 0) return false;
+        else return true;
     }
 };
 
