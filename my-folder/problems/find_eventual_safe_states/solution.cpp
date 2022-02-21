@@ -1,44 +1,39 @@
 class Solution {
-public:
-    bool dfs(vector<vector<int>>& graph, int i, vector<bool> &vis, vector<int> &memo) {
-        if(memo[i] != -1) {
-            return bool(memo[i]);
-        }
-        vis[i] = true;
-        if(graph[i].size() == 0) {
-            vis[i] = false;
-            memo[i] = true;
-            return true;
+public:    
+    vector<bool> visArr;
+    bool isCyclic = false;
+    bool dfsUtil(vector<vector<int>>& graph, vector<bool>& visited, vector<bool>& currVisited, int i, vector<bool>& safe) {
+        visited[i] = true;
+        currVisited[i] = true;
+        
+        for(int j : graph[i]) {
+            if(!visited[j]) {
+                if(!dfsUtil(graph, visited, currVisited, j, safe)) {
+                    return safe[i] = false;
+                }                
+            } else if(visited[j] && currVisited[j]) {
+                return safe[i] = false;
+            }
         }
         
-        bool isNextNodeSafe;
-        for(int j = 0; j < graph[i].size(); j++) {
-            if(vis[graph[i][j]] == true) {
-                vis[i] = false;
-                memo[i] = false;
-                return false;
-            }
-            isNextNodeSafe = dfs(graph, graph[i][j], vis, memo);
-            if(isNextNodeSafe == false){                
-                vis[i] = false;
-                memo[i] = false;
-                return false;
+        currVisited[i] = false;
+        return safe[i];
+    }
+    vector<int> eventualSafeNodes(vector<vector<int>>& graph) {
+        int vertices = graph.size();
+        vector<bool> visited(vertices, false);
+        vector<bool> currVisited(vertices, false);
+        vector<bool> safe(vertices, true);
+        
+        for(int i = 0; i < vertices; i++) {
+            if(!visited[i]) {
+                dfsUtil(graph, visited, currVisited, i, safe);
             }
         }
-        vis[i] = false;
-        memo[i] = true;
-        return true;
-    }
-    
-    vector<int> eventualSafeNodes(vector<vector<int>>& graph) {
-        int n = graph.size();
+        
         vector<int> res;
-        vector<bool> vis;
-        vector<int> memo(n, -1);
-        for(int i = 0; i < n; i++) {
-            vis.assign(n, false);
-            bool isNodeSafe = dfs(graph, i, vis, memo);
-            if(isNodeSafe) res.push_back(i);
+        for(int i = 0; i < vertices; i++) {
+            if(safe[i]) res.push_back(i);
         }
         
         return res;
