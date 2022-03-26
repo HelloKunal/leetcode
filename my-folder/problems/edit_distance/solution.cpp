@@ -1,26 +1,20 @@
 class Solution {
 public:
+    vector<vector<int>> dpArr;
+    int minDistUtil(string word1, string word2, int i, int j) {
+        if(i == word1.length() && j == word2.length()) return 0;
+        if(dpArr[i][j] != -1) return dpArr[i][j];
+        else if(i == word1.length()) {
+            return dpArr[i][j] = 1 + minDistUtil(word1, word2, i, j+1);
+        } else if(j == word2.length()) {
+            return dpArr[i][j] = 1 + minDistUtil(word1, word2, i+1, j);
+        } else {
+            if(word1[i] != word2[j]) return dpArr[i][j] = 1 + min(minDistUtil(word1, word2, i+1, j+1), min(minDistUtil(word1, word2, i+1, j), minDistUtil(word1, word2, i, j+1)));
+            else return dpArr[i][j] = minDistUtil(word1, word2, i+1, j+1);
+        }
+    }
     int minDistance(string word1, string word2) {
-        int n = word1.length();
-        int m = word2.length();
-        vector<vector<int>> dp(n+1, vector<int> (m+1));
-        for(int i = 0; i <= n; i++) {
-            dp[i][0] = i; 
-        }
-        for(int i = 0; i <= m; i++) {
-            dp[0][i] = i;
-        }
-        
-        for(int i = 1; i <= n; i++) {
-            for(int j = 1; j <= m; j++) {
-                if(word1[i-1] == word2[j-1]) {
-                    dp[i][j] = dp[i-1][j-1];
-                } else {
-                    dp[i][j] = min(dp[i-1][j], min(dp[i-1][j-1], dp[i][j-1])) + 1;
-                }                
-            }
-        }
-        
-        return dp[n][m];
+        dpArr.assign(word1.length()+1, vector<int> (word2.length()+1, -1));
+        return minDistUtil(word1, word2, 0, 0);
     }
 };
