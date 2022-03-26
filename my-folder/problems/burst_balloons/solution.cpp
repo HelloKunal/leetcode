@@ -1,30 +1,21 @@
 class Solution {
 public:
-    int maxCoins(vector<int>& nums) {
-        int n = nums.size();
-        vector<vector<int>> gapDP(n, vector<int> (n, 0));
-        
-        // gap strategy
-        for(int g = 0; g < n; g++) {
-            for(int i = 0, j = g; j < n; i++, j++) {
-                
-                int miTemp = INT_MIN;
-                for(int k = i; k <= j; k++) {
-                    int left = k == i ? 0 : gapDP[i][k-1];
-                    int right = k == j ? 0 : gapDP[k+1][j];
-                    
-                    int val = nums[k];                    
-                    if(i > 0) val *= nums[i-1];          
-                    if(j < n-1) val *= nums[j+1];
-                    
-                    int total = left + right + val;
-                    miTemp = max(miTemp, total);                    
-                }
-                
-                gapDP[i][j] = miTemp;
-            }
+    vector<vector<int>> dpArr;
+    int maxCoinsUtil(vector<int>& nums, int i, int j) {
+        if(i >= j) return 0;
+        if(dpArr[i][j] != -1) return dpArr[i][j];
+        int res = 0;
+        for(int k = i; k <= j-1; k++) {
+            int tempoRes = maxCoinsUtil(nums, i, k) + maxCoinsUtil(nums, k+1, j) + nums[i-1] * nums[k] * nums[j];
+            res = max(tempoRes, res);
         }
         
-        return gapDP[0][n-1];
+        return dpArr[i][j] = res;
+    }
+    int maxCoins(vector<int>& nums) {
+        nums.insert(nums.begin(), 1);
+        nums.push_back(1);
+        dpArr.assign(nums.size(), vector<int> (nums.size(), -1));
+        return maxCoinsUtil(nums, 1, nums.size()-1);
     }
 };
