@@ -1,21 +1,27 @@
 class Solution {
 public:
-    int beauRec(vector<vector<vector<int>>> &memo, vector<int> &prices, int k, int i, bool bought) {
-        if(i >= prices.size() || k == 0) return 0;
-        if(memo[i][k][bought] != -1) {
-            return memo[i][k][bought];
-        }
-        int res = beauRec(memo, prices, k, i+1, bought);
-        if(bought) {
-            res = max(res, beauRec(memo, prices, k-1, i+1, false) + prices[i]);
-        } else {
-            res = max(res, beauRec(memo, prices, k, i+1, true) - prices[i]);
+    int maxProfitUtil(vector<int>& prices) {
+        int T_ik0 = 0, T_ik1 = INT_MIN;
+        for(int price : prices) {
+            int T_ik0_old = T_ik0;
+            T_ik0 = max(T_ik0, T_ik1 + price);
+            T_ik1 = max(T_ik1, T_ik0_old - price);
         }
         
-        return memo[i][k][bought] = res;
+        return T_ik0;
     }
     int maxProfit(int k, vector<int>& prices) {
-        vector<vector<vector<int>>> memo(prices.size(), vector<vector<int>>(k+1, vector<int> (2, -1)));
-        return beauRec(memo, prices, k, 0, false);
+        if(k >= prices.size()/2) return maxProfitUtil(prices);
+        vector<int> T_ik0(k+1, 0);
+        vector<int> T_ik1(k+1, INT_MIN);
+        
+        for (int price : prices) {
+            for (int j = k; j > 0; j--) {
+                T_ik0[j] = max(T_ik0[j], T_ik1[j] + price);
+                T_ik1[j] = max(T_ik1[j], T_ik0[j - 1] - price);
+            }
+        }
+        return T_ik0[k];
+
     }
 };
