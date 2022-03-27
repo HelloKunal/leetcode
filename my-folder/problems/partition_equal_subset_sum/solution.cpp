@@ -1,30 +1,27 @@
 class Solution {
 public:
-    vector<vector<int>> memo;
-    bool rec(vector<int>& nums, int i, int target) {
-        
-        if(target <= 0) {
-            if(!target) return true; 
-            return false;
-        }
-        
-        if(i >= nums.size()) return false;
-        
-        if(memo[i][target] != -1) return memo[i][target];
-        
-        return memo[i][target] = rec(nums, i+1, target - nums[i]) || rec(nums, i+1, target);
-    }
+    
     bool canPartition(vector<int>& nums) {
-        int sum = 0;
-        for(int a : nums) sum += a;
+        int sumNums = 0;
+        for(int i : nums) sumNums += i;
         
-        if(sum % 2 == 1) return false;
-        else {
-            sum /= 2;
-            memo.assign(nums.size()+1, vector<int> (sum+1, -1));
-            return rec(nums, 0, sum);
+        if(sumNums % 2 == 1) return false;
+        int oneSum = sumNums / 2;
+        
+        vector<vector<bool>> dpArr(nums.size()+1, vector<bool> (oneSum+1));
+        for(int j = 0; j <= oneSum; j++) dpArr[0][j] = false;
+        for(int i = 0; i <= nums.size(); i++) dpArr[i][0] = true;
+        
+        for(int i = 1; i <= nums.size(); i++) {
+            for(int j = 1; j <= oneSum; j++) {
+                if(nums[i-1] <= j) {
+                    dpArr[i][j] = dpArr[i-1][j - nums[i-1]] || dpArr[i-1][j];
+                } else {
+                    dpArr[i][j] = dpArr[i-1][j];
+                }
+            }
         }
         
-        
+        return dpArr[nums.size()][oneSum];
     }
 };
