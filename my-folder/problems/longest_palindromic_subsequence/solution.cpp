@@ -1,24 +1,24 @@
 class Solution {
 public:
     int longestPalindromeSubseq(string s) {
-        int stringLen = s.length();
-        vector<vector<int>> dpArray(stringLen, vector<int> (stringLen));
+        int sLen = s.length();
         
-        for(int g = 0; g < stringLen; g++) {
-            for(int i = 0, y = g; y < stringLen; y++, i++) {
-                
-                if(g == 0) dpArray[i][y] = 1;
-                else if(g == 1) {
-                    if(s[i] == s[y]) dpArray[i][y] = 2;
-                    else dpArray[i][y] = 1;                
-                }
-                else {
-                    if(s[i] == s[y]) dpArray[i][y] = 2 + dpArray[i+1][y-1];
-                    else dpArray[i][y] = max(dpArray[i][y-1], dpArray[i+1][y]);
+        vector<vector<int>> dpArr(sLen+1, vector<int> (sLen+1));
+        for(int i = 0; i <= sLen; i++) dpArr[i][0] = 0;
+        for(int i = 0; i <= sLen; i++) dpArr[0][i] = 0;
+        
+        string copyS = s;
+        reverse(s.begin(), s.end());
+        for(int i = 1; i <= sLen; i++) {
+            for(int j = 1; j <= sLen; j++) {
+                if(s[i-1] == copyS[j-1]) {
+                    dpArr[i][j] = 1 + dpArr[i-1][j-1];
+                } else {
+                    dpArr[i][j] = max(dpArr[i-1][j], dpArr[i][j-1]);
                 }
             }
         }
         
-        return dpArray[0][stringLen-1];
-    }
+        return dpArr[s.length()][s.length()];
+     }
 };
