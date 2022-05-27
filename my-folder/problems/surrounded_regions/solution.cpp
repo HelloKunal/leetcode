@@ -2,30 +2,31 @@ class Solution {
 public:
     int dxy[5] = {0, 1, 0, -1, 0};
     
-    void dfs(vector<vector<char>>& board, int x, int y) {
-        board[y][x] = '1';
+    void dfs(vector<vector<char>>& board, int y, int x) {
+        board[y][x] = 'P';
+        
         for(int i = 0; i < 4; i++) {
-            int dx = x + dxy[i];
-            int dy = y + dxy[i+1];
-            if(dx < 0 || dx >= board[0].size() || dy < 0 || dy >= board.size()) continue;
-            if(board[dy][dx] == 'O') dfs(board, dx, dy);            
-        }        
+            int dy = y + dxy[i];
+            int dx = x + dxy[i+1];
+            
+            if(dy >= board.size() || dy < 0 || dx >= board[0].size() || dx < 0) continue;
+            if(board[dy][dx] == 'O') dfs(board, dy, dx);
+        }
     }
     
     void solve(vector<vector<char>>& board) {
-        for(int i = 0; i < board.size(); i++) {
-            if(board[i][0] == 'O') dfs(board, 0, i);
-            if(board[i][board[0].size()-1] == 'O') dfs(board, board[0].size()-1, i);
-        }
-        for(int i = 0; i < board[0].size(); i++) {
-            if(board[0][i] == 'O') dfs(board, i, 0);
-            if(board[board.size()-1][i] == 'O') dfs(board, i, board.size()-1);
-        }
+        int m = board.size();
+        int n = board[0].size();
         
-        for(int i = 0; i < board.size(); i++) {
-            for(int j = 0; j < board[0].size(); j++) {
-                if(board[i][j] == '1') board[i][j] = 'O';
-                else if(board[i][j] == 'O') board[i][j] = 'X';
+        for(int y = 0; y < m; y++) if(board[y][0] == 'O') dfs(board, y, 0);
+        for(int y = 0; y < m; y++) if(board[y][n-1] == 'O') dfs(board, y, n-1);
+        for(int x = 0; x < n; x++) if(board[0][x] == 'O') dfs(board, 0, x);
+        for(int x = 0; x < n; x++) if(board[m-1][x] == 'O') dfs(board, m-1, x);
+        
+        for(int y = 0; y < m; y++) {
+            for(int x = 0; x < n; x++) {
+                if(board[y][x] == 'O') board[y][x] = 'X';
+                if(board[y][x] == 'P') board[y][x] = 'O';
             }
         }
     }
