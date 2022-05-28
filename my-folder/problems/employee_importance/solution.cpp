@@ -10,15 +10,29 @@ public:
 
 class Solution {
 public:
-    void dfs(int id, unordered_map<int, Employee*> &um, int &sum) {
-        sum += um[id]->importance;
-        for(auto i : um[id]->subordinates) dfs(i, um, sum);
+    void dfs(pair<int, vector<int>> adj[], int* sum, vector<bool> &vis, int i) {
+        *sum += adj[i].first;
+        vis[i] = true;
+        for(auto j : adj[i].second) {
+            if(!vis[j]) {
+                dfs(adj, sum, vis, j);
+            }
+        }
     }
+    
     int getImportance(vector<Employee*> employees, int id) {
-        unordered_map<int, Employee*> um;
-        for(auto x : employees) um[x->id] = x;
+        int size = 2001;
+        pair<int, vector<int>> adj[size];
+        for(auto i : employees) {
+            adj[i->id].first = i->importance;
+            for(auto j : i->subordinates) {
+                adj[i->id].second.push_back(j);
+            }
+        }
+        
         int sum = 0;
-        dfs(id, um, sum);
+        vector<bool> vis(size, false);
+        dfs(adj, &sum, vis, id);
         return sum;
     }
 };
