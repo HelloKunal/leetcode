@@ -1,34 +1,37 @@
 class Solution {
 public:
-    int dx[4] = {0, 1, 0, -1};
-    int dy[4] = {1, 0, -1, 0};
+    int dxy[5] = {0, 1, 0, -1, 0};
+    
     vector<vector<int>> updateMatrix(vector<vector<int>>& mat) {
-        int xAxis = mat[0].size();
-        int yAxis = mat.size();
-        
-        vector<vector<bool>> vis(yAxis, vector<bool>(xAxis, false));
-        queue<pair<int, int>> q;
-        for(int y = 0; y < yAxis; y++) {
-            for(int x = 0; x < xAxis; x++) {
-                if(mat[y][x] == 0) {
-                    q.push(make_pair(x, y));
-                    vis[y][x] = true;
+        queue<pair<int, int>> qu;
+        vector<vector<bool>> vis(mat.size(), vector<bool> (mat[0].size(), false));
+        vector<vector<int>> res(mat.size(), vector<int> (mat[0].size(), 0));
+        for(int i = 0; i < mat.size(); i++) {
+            for(int j = 0; j < mat[0].size(); j++) {
+                if(mat[i][j] == 0) {
+                    qu.push({i, j});
+                    vis[i][j] = true;
                 }
             }
         }
         
-        while(!q.empty()) {
-            auto xy = q.front();            
-            q.pop();
+        while(qu.size()) {
+            auto curr = qu.front();
+            qu.pop();
+            int y = curr.first;
+            int x = curr.second;
             
             for(int i = 0; i < 4; i++) {
-                int nx = xy.first + dx[i];
-                int ny = xy.second + dy[i];
+                int dy = y + dxy[i];
+                int dx = x + dxy[i+1];
                 
-                if(nx < 0 || nx > xAxis-1 || ny < 0 || ny > yAxis-1 || vis[ny][nx]) continue;
-                mat[ny][nx] = mat[xy.second][xy.first] + 1;
-                q.push(make_pair(nx, ny));
-                vis[ny][nx] = true;
+                if(dy >= mat.size() || dy < 0 || dx >= mat[0].size() || dx < 0 || vis[dy][dx]) {
+                    continue;
+                }
+                if(mat[dy][dx] == 0) continue;
+                mat[dy][dx] = mat[y][x] + 1;
+                qu.push({dy, dx});
+                vis[dy][dx] = true;
             }
         }
         
