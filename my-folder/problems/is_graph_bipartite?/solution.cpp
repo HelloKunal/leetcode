@@ -1,51 +1,40 @@
-class Pair {
-    public:
-    int v;
-    string psf;
-    int level;
-    
-    Pair(int v, string psf, int level){
-        this->v = v;
-        this->psf = psf;
-        this->level = level;
-    }
-};
-
 class Solution {
 public:
-    bool checkSectionBipartite(vector<vector<int>>& graph, vector<int> &vis, int src) {
-        queue<Pair> q;
-        q.push(Pair(src, to_string(src), 0));
+    bool isBipartite(vector<vector<int>>& graph) {
+        int uSize = graph.size();
         
-        while(!q.empty()) {
-            auto pair = q.front();
-            q.pop();
-            
-            if(vis[pair.v] != -1) {
-                if(vis[pair.v] != pair.level) return false;
-                
-            } else {
-                vis[pair.v] = pair.level;
+        vector<int> vis(uSize, -1);
+        for(int i = 0; i < uSize; i++) {
+            if(vis[i] == -1) {
+                if(!isComponentBipartite(graph, i, vis)) return false;
             }
-            
-            for(int des : graph[pair.v]) {
-                if(vis[des] == -1) {
-                    q.push(Pair(des, pair.psf+to_string(des), pair.level+1));
-                }
-            }            
         }
+        
         return true;
     }
-    bool isBipartite(vector<vector<int>>& graph) {
-        int V = graph.size();
-        vector<int> vis(V, -1);
+    
+    bool isComponentBipartite(vector<vector<int>>& adj, int firstVertex, vector<int>& vis) {
+        queue<pair<int, int>> q;
+        q.push({firstVertex, 0});
         
-        for(int i = 0; i < V; i++) {
-            if(vis[i] == -1) {
-                bool isSectionBipartite = checkSectionBipartite(graph, vis, i);
-                if(!isSectionBipartite) return false;
+        while(q.size() > 0) {  
+            auto item = q.front(); q.pop();
+            int currVertex = item.first;
+            int currLevel = item.second;
+            
+            if(vis[currVertex] == -1) {
+                vis[currVertex] = currLevel;
+            } else {
+                if(currLevel != vis[currVertex]) return false;
+            }
+            
+            for(int i : adj[currVertex]) {
+                if(vis[i] == -1) {
+                    q.push({i, currLevel+1});
+                }
             }
         }
+        
         return true;
     }
 };
